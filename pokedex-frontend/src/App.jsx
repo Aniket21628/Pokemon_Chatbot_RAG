@@ -37,7 +37,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-400 via-red-400 to-pink-400 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-green-400 via-blue-400 to-violet-400 flex flex-col items-center justify-center p-4 relative overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-300 rounded-full opacity-20 animate-pulse"></div>
       <div className="absolute bottom-20 right-10 w-16 h-16 bg-blue-300 rounded-full opacity-20 animate-pulse delay-1000"></div>
@@ -70,37 +70,62 @@ function App() {
         )}
         
         {/* Rotom Character */}
-        <div className="relative mb-6 transform hover:scale-105 transition-transform duration-300">
-          <div className="w-40 h-40 relative animate-float">
-            {/* Main body - larger orange circle */}
-            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-orange-500 rounded-full shadow-xl border-2 border-orange-600"></div>
-            
-            {/* Eyes */}
-            <div className="absolute top-8 left-1/2 transform -translate-x-1/2 -translate-x-4 w-4 h-4 bg-cyan-400 rounded-full border border-cyan-600">
-              <div className="absolute top-0.5 left-0.5 w-2 h-2 bg-white rounded-full"></div>
-            </div>
-            <div className="absolute top-8 left-1/2 transform -translate-x-1/2 translate-x-4 w-4 h-4 bg-cyan-400 rounded-full border border-cyan-600">
-              <div className="absolute top-0.5 left-0.5 w-2 h-2 bg-white rounded-full"></div>
-            </div>
-            
-            {/* Mouth - small black oval */}
-            <div className="absolute top-16 left-1/2 transform -translate-x-1/2 w-2 h-1 bg-black rounded-full"></div>
-            
-            {/* Top spike */}
-            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-6 border-l-transparent border-r-transparent border-b-red-500"></div>
-            
-            {/* Left arm */}
-            <div className="absolute top-12 left-2 w-6 h-6 bg-red-500 rounded-full border border-red-600 shadow-lg"></div>
-            
-            {/* Right arm */}
-            <div className="absolute top-12 right-2 w-6 h-6 bg-red-500 rounded-full border border-red-600 shadow-lg"></div>
-            
-            {/* Bottom left appendage */}
-            <div className="absolute bottom-6 left-6 w-5 h-5 bg-red-500 rounded-full border border-red-600 shadow-lg"></div>
-            
-            {/* Bottom right appendage */}
-            <div className="absolute bottom-6 right-6 w-5 h-5 bg-red-500 rounded-full border border-red-600 shadow-lg"></div>
+      <div className="relative mb-6 transform hover:scale-105 transition-transform duration-300">
+        <div className="w-48 h-48 relative animate-float">
+          {/* Main body - oval orange shape */}
+          <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-28 h-32 bg-gradient-to-b from-orange-400 to-orange-600 rounded-full shadow-xl border-2 border-orange-700 relative overflow-hidden">
+            {/* Body highlight */}
+            <div className="absolute top-2 left-4 w-6 h-8 bg-orange-300 rounded-full opacity-60"></div>
+            {/* Body shadow */}
+            <div className="absolute bottom-2 left-2 right-2 h-4 bg-orange-700 rounded-full opacity-30"></div>
           </div>
+
+          {/* Eyes - larger blue eyes */}
+          <div className="absolute top-12 left-1/2 transform -translate-x-1/2 -translate-x-6 w-6 h-6 bg-gradient-to-b from-cyan-300 to-cyan-500 rounded-full border-2 border-cyan-700 shadow-lg">
+            <div className="absolute top-1 left-1 w-3 h-3 bg-white rounded-full"></div>
+            <div className="absolute top-0.5 left-0.5 w-2 h-2 bg-white rounded-full opacity-80"></div>
+          </div>
+          <div className="absolute top-12 left-1/2 transform -translate-x-1/2 translate-x-6 w-6 h-6 bg-gradient-to-b from-cyan-300 to-cyan-500 rounded-full border-2 border-cyan-700 shadow-lg">
+            <div className="absolute top-1 left-1 w-3 h-3 bg-white rounded-full"></div>
+            <div className="absolute top-0.5 left-0.5 w-2 h-2 bg-white rounded-full opacity-80"></div>
+          </div>
+
+          {/* Zigzag mouth */}
+          <div className="absolute top-20 left-1/2 transform -translate-x-1/2">
+            <div className="relative w-8 h-3">
+              <div className="absolute top-0 left-0 w-0 h-0 border-l-2 border-r-2 border-b-3 border-l-transparent border-r-transparent border-b-gray-800"></div>
+              <div className="absolute top-0 left-2 w-0 h-0 border-l-2 border-r-2 border-t-3 border-l-transparent border-r-transparent border-t-gray-800"></div>
+              <div className="absolute top-0 left-4 w-0 h-0 border-l-2 border-r-2 border-b-3 border-l-transparent border-r-transparent border-b-gray-800"></div>
+              <div className="absolute top-0 left-6 w-0 h-0 border-l-2 border-r-2 border-t-3 border-l-transparent border-r-transparent border-t-gray-800"></div>
+            </div>
+          </div>
+
+          {/* Top spike/point */}
+          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-r-6 border-b-8 border-l-transparent border-r-transparent border-b-gradient-to-b border-b-red-500 shadow-lg"></div>
+
+          {/* Left arm/appendage */}
+          <div className="absolute top-16 left-4 w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-full border-2 border-red-600 shadow-lg transform -rotate-12">
+            <div className="absolute top-1 left-1 w-2 h-2 bg-red-700 rounded-full opacity-60"></div>
+          </div>
+
+          {/* Right arm/appendage */}
+          <div className="absolute top-16 right-4 w-8 h-8 bg-gradient-to-bl from-orange-400 to-red-500 rounded-full border-2 border-red-600 shadow-lg transform rotate-12">
+            <div className="absolute top-1 right-1 w-2 h-2 bg-red-700 rounded-full opacity-60"></div>
+          </div>
+
+          {/* Bottom left appendage */}
+          <div className="absolute bottom-8 left-8 w-7 h-7 bg-gradient-to-br from-orange-400 to-red-500 rounded-full border-2 border-red-600 shadow-lg transform -rotate-45">
+            <div className="absolute top-1 left-1 w-2 h-2 bg-red-700 rounded-full opacity-60"></div>
+          </div>
+
+          {/* Bottom right appendage */}
+          <div className="absolute bottom-8 right-8 w-7 h-7 bg-gradient-to-bl from-orange-400 to-red-500 rounded-full border-2 border-red-600 shadow-lg transform rotate-45">
+            <div className="absolute top-1 right-1 w-2 h-2 bg-red-700 rounded-full opacity-60"></div>
+          </div>
+
+          {/* Electric sparks effect */}
+          <div className="absolute top-4 right-2 w-1 h-1 bg-yellow-300 rounded-full animate-ping"></div>
+          <div className="absolute bottom-4 left-2 w-1 h-1 bg-yellow-300 rounded-full animate-ping delay-500"></div>
         </div>
         
         {/* Input section */}
@@ -147,7 +172,7 @@ function App() {
         }
         
         .animate-float {
-          animation: float 3s ease-in-out infinite;
+          animation: float 1s ease-in-out infinite;
         }
         
         .animate-fadeIn {
@@ -155,6 +180,7 @@ function App() {
         }
       `}</style>
     </div>
+  </div>
   );
 }
 
