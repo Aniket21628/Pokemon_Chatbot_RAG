@@ -73,7 +73,7 @@ function App() {
       <div className="relative mb-6 transform hover:scale-105 transition-transform duration-300">
         <div className="w-48 h-48 relative animate-float">
           {/* Main body - oval orange shape */}
-          <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-28 h-32 bg-gradient-to-b from-orange-400 to-orange-600 rounded-full shadow-xl border-2 border-orange-700 relative overflow-hidden">
+          <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-28 h-32 bg-gradient-to-b from-orange-400 to-orange-600 rounded-full shadow-xl border-2 border-orange-700 overflow-hidden">
             {/* Body highlight */}
             <div className="absolute top-2 left-4 w-6 h-8 bg-orange-300 rounded-full opacity-60"></div>
             {/* Body shadow */}
