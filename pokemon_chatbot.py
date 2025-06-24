@@ -25,6 +25,7 @@ from rich.style import Style
 
    # Load environment variables from .env
 load_dotenv()
+NVIDIA_API_KEY_ENV_VAR = "NVIDIA_API_KEY"
 
    # Setup logging
 logging.basicConfig(
@@ -41,7 +42,7 @@ base_style = Style(color="#76B900", bold=True)
 pprint = partial(console.print, style=base_style)
 
    # Set NVIDIA API key
-api_key = os.getenv("NVIDIA_API_KEY")
+api_key = os.getenv(NVIDIA_API_KEY_ENV_VAR)
 if not api_key:
        logger.error("NVIDIA_API_KEY environment variable not set")
        raise ValueError("Please set the NVIDIA_API_KEY environment variable")
