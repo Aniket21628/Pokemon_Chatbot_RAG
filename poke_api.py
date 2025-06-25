@@ -154,5 +154,7 @@ async def get_session_history(session_id: str):
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    import os
+    port = int(os.environ.get("PORT", 8000))  # use Render's assigned port
+    uvicorn.run("poke_api:app", host="0.0.0.0", port=port)
+    print(f"Server running on port {port}")
