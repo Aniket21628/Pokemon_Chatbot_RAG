@@ -12,9 +12,11 @@ function App() {
     createNewSession();
   }, []);
 
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
   const createNewSession = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/v1/new-session', {
+      const res = await fetch(`${BASE_URL}/api/v1/new-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,7 +39,7 @@ function App() {
     if (!sessionId) return;
     
     try {
-      await fetch('http://localhost:8000/api/v1/clear-session', {
+      await fetch(`${BASE_URL}/api/v1/clear-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,7 +66,7 @@ function App() {
     setConversationHistory(prev => [...prev, { type: 'user', message: userMessage }]);
     
     try {
-      const res = await fetch('http://localhost:8000/query', {
+      const res = await fetch(`${BASE_URL}/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
