@@ -13,3 +13,4 @@ uvicorn
 pydantic
 httpx
 requests
+wikipedia  
