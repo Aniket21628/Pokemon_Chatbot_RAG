@@ -1,21 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function App() {
-  const [query, setQuery] = useState('');
+  const [text, setText] = useState('');
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
+  const [conversationHistory, setConversationHistory] = useState([]);
+
+  // Create a new session when component mounts
+  useEffect(() => {
+    createNewSession();
+  }, []);
+
+  const createNewSession = async () => {
+    try {
+      const res = await fetch('http://localhost:8000/api/v1/new-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setSessionId(data.session_id);
+        console.log('New session created:', data.session_id);
+      }
+    } catch (error) {
+      console.error('Failed to create new session:', error);
+      // Use default session if creation fails
+      setSessionId('default');
+    }
+  };
+
+  const clearConversation = async () => {
+    if (!sessionId) return;
+    
+    try {
+      await fetch('http://localhost:8000/api/v1/clear-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ session_id: sessionId }),
+      });
+      
+      // Clear local state
+      setConversationHistory([]);
+      setResponse('');
+      console.log('Conversation cleared for session:', sessionId);
+    } catch (error) {
+      console.error('Failed to clear conversation:', error);
+    }
+  };
 
   const handleSubmit = async () => {
-    if (!query.trim()) return;
+    if (!text.trim()) return;
     
     setLoading(true);
+    const userMessage = text.trim();
+    
+    // Add user message to conversation history
+    setConversationHistory(prev => [...prev, { type: 'user', message: userMessage }]);
+    
     try {
       const res = await fetch('http://localhost:8000/query', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ 
+          text: userMessage,
+          session_id: sessionId 
+        }),
       });
       
       if (!res.ok) {
@@ -24,8 +81,16 @@ function App() {
       
       const data = await res.json();
       setResponse(data.response);
+      
+      // Add bot response to conversation history
+      setConversationHistory(prev => [...prev, { type: 'bot', message: data.response }]);
+      
+      // Clear input
+      setText('');
     } catch (error) {
-      setResponse('Error: Could not fetch response from server.');
+      const errorMessage = 'Error: Could not fetch response from server.';
+      setResponse(errorMessage);
+      setConversationHistory(prev => [...prev, { type: 'bot', message: errorMessage }]);
     }
     setLoading(false);
   };
@@ -42,6 +107,24 @@ function App() {
       <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-300 rounded-full opacity-20 animate-pulse"></div>
       <div className="absolute bottom-20 right-10 w-16 h-16 bg-blue-300 rounded-full opacity-20 animate-pulse delay-1000"></div>
       <div className="absolute top-1/3 right-1/4 w-12 h-12 bg-green-300 rounded-full opacity-20 animate-pulse delay-500"></div>
+      
+      {/* Session controls - positioned at top right */}
+      <div className="absolute top-4 right-4 flex gap-2">
+        <button
+          onClick={createNewSession}
+          className="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-lg text-sm hover:bg-white/30 transition-all duration-200 border border-white/30"
+          title="Start New Conversation"
+        >
+          🔄 New Chat
+        </button>
+        <button
+          onClick={clearConversation}
+          className="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-lg text-sm hover:bg-white/30 transition-all duration-200 border border-white/30"
+          title="Clear Current Conversation"
+        >
+          🧹 Clear
+        </button>
+      </div>
       
       <h1 className="text-5xl font-bold text-white mb-8 text-center drop-shadow-lg animate-bounce">
         Rotom Pokédex Assistant
@@ -70,62 +153,63 @@ function App() {
         )}
         
         {/* Rotom Character */}
-      <div className="relative mb-6 transform hover:scale-105 transition-transform duration-300">
-        <div className="w-48 h-48 relative animate-float">
-          {/* Main body - oval orange shape */}
-          <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-28 h-32 bg-gradient-to-b from-orange-400 to-orange-600 rounded-full shadow-xl border-2 border-orange-700 overflow-hidden">
-            {/* Body highlight */}
-            <div className="absolute top-2 left-4 w-6 h-8 bg-orange-300 rounded-full opacity-60"></div>
-            {/* Body shadow */}
-            <div className="absolute bottom-2 left-2 right-2 h-4 bg-orange-700 rounded-full opacity-30"></div>
-          </div>
-
-          {/* Eyes - larger blue eyes */}
-          <div className="absolute top-12 left-1/2 transform -translate-x-1/2 -translate-x-6 w-6 h-6 bg-gradient-to-b from-cyan-300 to-cyan-500 rounded-full border-2 border-cyan-700 shadow-lg">
-            <div className="absolute top-1 left-1 w-3 h-3 bg-white rounded-full"></div>
-            <div className="absolute top-0.5 left-0.5 w-2 h-2 bg-white rounded-full opacity-80"></div>
-          </div>
-          <div className="absolute top-12 left-1/2 transform -translate-x-1/2 translate-x-6 w-6 h-6 bg-gradient-to-b from-cyan-300 to-cyan-500 rounded-full border-2 border-cyan-700 shadow-lg">
-            <div className="absolute top-1 left-1 w-3 h-3 bg-white rounded-full"></div>
-            <div className="absolute top-0.5 left-0.5 w-2 h-2 bg-white rounded-full opacity-80"></div>
-          </div>
-
-          {/* Zigzag mouth */}
-          <div className="absolute top-20 left-1/2 transform -translate-x-1/2">
-            <div className="relative w-8 h-3">
-              <div className="absolute top-0 left-0 w-0 h-0 border-l-2 border-r-2 border-b-3 border-l-transparent border-r-transparent border-b-gray-800"></div>
-              <div className="absolute top-0 left-2 w-0 h-0 border-l-2 border-r-2 border-t-3 border-l-transparent border-r-transparent border-t-gray-800"></div>
-              <div className="absolute top-0 left-4 w-0 h-0 border-l-2 border-r-2 border-b-3 border-l-transparent border-r-transparent border-b-gray-800"></div>
-              <div className="absolute top-0 left-6 w-0 h-0 border-l-2 border-r-2 border-t-3 border-l-transparent border-r-transparent border-t-gray-800"></div>
+        <div className="relative mb-6 transform hover:scale-105 transition-transform duration-300">
+          <div className="w-48 h-48 relative animate-float">
+            {/* Main body - oval orange shape */}
+            <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-28 h-32 bg-gradient-to-b from-orange-400 to-orange-600 rounded-full shadow-xl border-2 border-orange-700 overflow-hidden">
+              {/* Body highlight */}
+              <div className="absolute top-2 left-4 w-6 h-8 bg-orange-300 rounded-full opacity-60"></div>
+              {/* Body shadow */}
+              <div className="absolute bottom-2 left-2 right-2 h-4 bg-orange-700 rounded-full opacity-30"></div>
             </div>
+
+            {/* Eyes - larger blue eyes */}
+            <div className="absolute top-12 left-1/2 transform -translate-x-1/2 -translate-x-6 w-6 h-6 bg-gradient-to-b from-cyan-300 to-cyan-500 rounded-full border-2 border-cyan-700 shadow-lg">
+              <div className="absolute top-1 left-1 w-3 h-3 bg-white rounded-full"></div>
+              <div className="absolute top-0.5 left-0.5 w-2 h-2 bg-white rounded-full opacity-80"></div>
+            </div>
+            <div className="absolute top-12 left-1/2 transform -translate-x-1/2 translate-x-6 w-6 h-6 bg-gradient-to-b from-cyan-300 to-cyan-500 rounded-full border-2 border-cyan-700 shadow-lg">
+              <div className="absolute top-1 left-1 w-3 h-3 bg-white rounded-full"></div>
+              <div className="absolute top-0.5 left-0.5 w-2 h-2 bg-white rounded-full opacity-80"></div>
+            </div>
+
+            {/* Zigzag mouth */}
+            <div className="absolute top-20 left-1/2 transform -translate-x-1/2">
+              <div className="relative w-8 h-3">
+                <div className="absolute top-0 left-0 w-0 h-0 border-l-2 border-r-2 border-b-3 border-l-transparent border-r-transparent border-b-gray-800"></div>
+                <div className="absolute top-0 left-2 w-0 h-0 border-l-2 border-r-2 border-t-3 border-l-transparent border-r-transparent border-t-gray-800"></div>
+                <div className="absolute top-0 left-4 w-0 h-0 border-l-2 border-r-2 border-b-3 border-l-transparent border-r-transparent border-b-gray-800"></div>
+                <div className="absolute top-0 left-6 w-0 h-0 border-l-2 border-r-2 border-t-3 border-l-transparent border-r-transparent border-t-gray-800"></div>
+              </div>
+            </div>
+
+            {/* Top spike/point */}
+            <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-r-6 border-b-8 border-l-transparent border-r-transparent border-b-gradient-to-b border-b-red-500 shadow-lg"></div>
+
+            {/* Left arm/appendage */}
+            <div className="absolute top-16 left-4 w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-full border-2 border-red-600 shadow-lg transform -rotate-12">
+              <div className="absolute top-1 left-1 w-2 h-2 bg-red-700 rounded-full opacity-60"></div>
+            </div>
+
+            {/* Right arm/appendage */}
+            <div className="absolute top-16 right-4 w-8 h-8 bg-gradient-to-bl from-orange-400 to-red-500 rounded-full border-2 border-red-600 shadow-lg transform rotate-12">
+              <div className="absolute top-1 right-1 w-2 h-2 bg-red-700 rounded-full opacity-60"></div>
+            </div>
+
+            {/* Bottom left appendage */}
+            <div className="absolute bottom-8 left-8 w-7 h-7 bg-gradient-to-br from-orange-400 to-red-500 rounded-full border-2 border-red-600 shadow-lg transform -rotate-45">
+              <div className="absolute top-1 left-1 w-2 h-2 bg-red-700 rounded-full opacity-60"></div>
+            </div>
+
+            {/* Bottom right appendage */}
+            <div className="absolute bottom-8 right-8 w-7 h-7 bg-gradient-to-bl from-orange-400 to-red-500 rounded-full border-2 border-red-600 shadow-lg transform rotate-45">
+              <div className="absolute top-1 right-1 w-2 h-2 bg-red-700 rounded-full opacity-60"></div>
+            </div>
+
+            {/* Electric sparks effect */}
+            <div className="absolute top-4 right-2 w-1 h-1 bg-yellow-300 rounded-full animate-ping"></div>
+            <div className="absolute bottom-4 left-2 w-1 h-1 bg-yellow-300 rounded-full animate-ping delay-500"></div>
           </div>
-
-          {/* Top spike/point */}
-          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-r-6 border-b-8 border-l-transparent border-r-transparent border-b-gradient-to-b border-b-red-500 shadow-lg"></div>
-
-          {/* Left arm/appendage */}
-          <div className="absolute top-16 left-4 w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-full border-2 border-red-600 shadow-lg transform -rotate-12">
-            <div className="absolute top-1 left-1 w-2 h-2 bg-red-700 rounded-full opacity-60"></div>
-          </div>
-
-          {/* Right arm/appendage */}
-          <div className="absolute top-16 right-4 w-8 h-8 bg-gradient-to-bl from-orange-400 to-red-500 rounded-full border-2 border-red-600 shadow-lg transform rotate-12">
-            <div className="absolute top-1 right-1 w-2 h-2 bg-red-700 rounded-full opacity-60"></div>
-          </div>
-
-          {/* Bottom left appendage */}
-          <div className="absolute bottom-8 left-8 w-7 h-7 bg-gradient-to-br from-orange-400 to-red-500 rounded-full border-2 border-red-600 shadow-lg transform -rotate-45">
-            <div className="absolute top-1 left-1 w-2 h-2 bg-red-700 rounded-full opacity-60"></div>
-          </div>
-
-          {/* Bottom right appendage */}
-          <div className="absolute bottom-8 right-8 w-7 h-7 bg-gradient-to-bl from-orange-400 to-red-500 rounded-full border-2 border-red-600 shadow-lg transform rotate-45">
-            <div className="absolute top-1 right-1 w-2 h-2 bg-red-700 rounded-full opacity-60"></div>
-          </div>
-
-          {/* Electric sparks effect */}
-          <div className="absolute top-4 right-2 w-1 h-1 bg-yellow-300 rounded-full animate-ping"></div>
-          <div className="absolute bottom-4 left-2 w-1 h-1 bg-yellow-300 rounded-full animate-ping delay-500"></div>
         </div>
         
         {/* Input section */}
@@ -133,15 +217,15 @@ function App() {
           <div className="flex flex-col">
             <input
               type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Ask Rotom about any Pokémon..."
               className="p-3 mb-4 border-2 border-orange-200 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 placeholder-gray-500 transition-all duration-200"
             />
             <button
               onClick={handleSubmit}
-              disabled={loading || !query.trim()}
+              disabled={loading || !text.trim()}
               className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-3 rounded-xl hover:from-orange-600 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-lg transform hover:scale-105 active:scale-95"
             >
               {loading ? (
@@ -156,6 +240,13 @@ function App() {
                 </span>
               )}
             </button>
+            
+            {/* Session info - subtle display */}
+            {sessionId && (
+              <div className="mt-3 text-xs text-gray-500 text-center">
+                💬 Conversation active • {conversationHistory.filter(h => h.type === 'user').length} questions asked
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -180,7 +271,6 @@ function App() {
         }
       `}</style>
     </div>
-  </div>
   );
 }
 
