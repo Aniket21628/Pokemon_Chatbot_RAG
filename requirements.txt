@@ -3,6 +3,7 @@ rich
 python-dotenv
 chromadb
 langchain
+langchain_chroma
 langchain-core
 langchain-cohere
 langchain-nvidia-ai-endpoints
