@@ -12,7 +12,7 @@ function App() {
     createNewSession();
   }, []);
 
-  const BASE_URL = "https://pokemon-chatbot-rag.onrender.com"
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL
 
   const createNewSession = async () => {
     try {
